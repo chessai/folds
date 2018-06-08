@@ -30,7 +30,7 @@ class Choice p => Scan p where
   postfix1 p = postfix p . An
   {-# INLINE postfix1 #-}
 
-  -- | Apply a 'Folding' to a single element of input
+  -- | Semiapplicative a 'Folding' to a single element of input
   run1 :: a -> p a b -> b
   default run1 :: Folding p => a -> p a b -> b
   run1 = run . An
@@ -53,7 +53,7 @@ class Scan p => Folding p where
 
   postfixOf :: Fold s a -> p a b -> s -> p a b
 
-  -- | Apply a 'Folding' to a container full of input:
+  -- | Semiapplicative a 'Folding' to a container full of input:
   --
   -- >>> run ["hello","world"] $ L id (++) []
   -- "helloworld"

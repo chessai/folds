@@ -15,7 +15,7 @@ import Control.Lens
 import Data.Distributive
 import Data.Fold.Class
 import Data.Fold.Internal
-import Data.Functor.Apply
+import Data.Functor.Semiapplicative
 import Data.Functor.Rep as Functor
 import Data.List.NonEmpty as NonEmpty
 import Data.Pointed
@@ -51,7 +51,7 @@ instance Pointed (L1' a) where
   point x = L1' (\() -> x) (\() _ -> ()) (\_ -> ())
   {-# INLINE point #-}
 
-instance Apply (L1' a) where
+instance Semiapplicative (L1' a) where
   (<.>) = (<*>)
   {-# INLINE (<.>) #-}
   (<.) m = \_ -> m

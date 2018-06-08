@@ -25,7 +25,7 @@ import Data.Distributive
 import Data.Fold.Class
 import Data.Fold.Internal
 import Data.Foldable
-import Data.Functor.Bind
+import Data.Functor.Semimonad
 import Data.Functor.Extend
 import Data.Functor.Rep as Functor
 import Data.Profunctor.Closed
@@ -140,7 +140,7 @@ instance Applicative (M a) where
   _ *> m = m
   {-# INLINE (*>) #-}
 
-instance Bind (M a) where
+instance Semimonad (M a) where
   (>>-) = (>>=)
   {-# INLINE (>>-) #-}
 
@@ -166,7 +166,7 @@ instance Extend (M a) where
   duplicated = duplicate
   {-# INLINE duplicated #-}
 
-instance Apply (M a) where
+instance Semiapplicative (M a) where
   (<.>) = (<*>)
   {-# INLINE (<.>) #-}
 

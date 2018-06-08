@@ -41,15 +41,15 @@ import Data.Semigroup hiding (Last, First)
 #if __GLASGOW_HASKELL__ < 710
 import Data.Foldable
 #endif
-import Data.Functor.Bind
+import Data.Functor.Semimonad
 import Data.HashMap.Lazy as HM
 import Data.Profunctor.Unsafe
 import Data.Proxy (Proxy(Proxy))
 import Data.Reflection
 import Data.Reify
-import Data.Semigroup.Foldable
-import Data.Semigroup.Bifoldable
-import Data.Semigroup.Bitraversable
+import Data.Semigroup.Semifoldable
+import Data.Semigroup.Semibifoldable
+import Data.Semigroup.Semibitraversable
 
 #if __GLASGOW_HASKELL__ < 710
 import Data.Traversable
@@ -250,8 +250,8 @@ newtype FreeSemigroup a = FreeSemigroup { runFreeSemigroup :: forall m. Semigrou
 instance Foldable FreeSemigroup where
   foldMap f (FreeSemigroup m) = unwrapMonoid $ m (WrapMonoid #. f)
 
-instance Foldable1 FreeSemigroup where
-  foldMap1 f (FreeSemigroup m) = m f
+instance Semifoldable FreeSemigroup where
+  semifoldMap f (FreeSemigroup m) = m f
 
 data T a b = T0 | T1 a | T2 b b deriving (Functor, Foldable, Traversable)
 
@@ -312,15 +312,15 @@ instance Bitraversable T1 where
   bitraverse f _ (A a) = A <$> f a
   bitraverse _ g (B b c) = B <$> g b <*> g c
 
-foldDeRef1 :: forall f a. (MuRef1 f, Bifoldable1 (DeRef1 f)) => f a -> FreeSemigroup a
+foldDeRef1 :: forall f a. (MuRef1 f, Semibifoldable (DeRef1 f)) => f a -> FreeSemigroup a
 foldDeRef1 m = case muRef1 (undefined :: Proxy (f a)) of
   Dict -> case unsafePerformIO (reifyGraph m) of
-    Graph xs i | hm <- HM.fromList xs -> FreeSemigroup $ \ f -> fix (\mm -> fmap (bifoldMap1 f (mm !)) hm) ! i
+    Graph xs i | hm <- HM.fromList xs -> FreeSemigroup $ \ f -> fix (\mm -> fmap (semibifoldMap f (mm !)) hm) ! i
 
-instance Bifoldable1 T1 where
-  bifoldMap1 f _ (A a) = f a
-  bifoldMap1 _ g (B b c) = g b <> g c
+instance Semibifoldable T1 where
+  semibifoldMap f _ (A a) = f a
+  semibifoldMap _ g (B b c) = g b <> g c
 
-instance Bitraversable1 T1 where
-  bitraverse1 f _ (A a) = A <$> f a
-  bitraverse1 _ g (B b c) = B <$> g b <.> g c
+instance Semibitraversable T1 where
+  semibitraverse f _ (A a) = A <$> f a
+  semibitraverse _ g (B b c) = B <$> g b <.> g c

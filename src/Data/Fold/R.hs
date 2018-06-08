@@ -21,7 +21,7 @@ import Data.Foldable
 import Data.Fold.Class
 import Data.Fold.Internal
 import Data.Functor.Extend
-import Data.Functor.Bind
+import Data.Functor.Semimonad
 import Data.Functor.Rep as Functor
 import Data.Profunctor.Closed
 import Data.Profunctor
@@ -105,7 +105,7 @@ instance Comonad (R a) where
   extend f (R k h z)  = R (f . R k h) h z
   {-# INLINE extend #-}
 
-instance Bind (R a) where
+instance Semimonad (R a) where
   (>>-) = (>>=)
   {-# INLINE (>>-) #-}
 
@@ -146,7 +146,7 @@ instance Extend (R a) where
   duplicated = duplicate
   {-# INLINE duplicated #-}
 
-instance Apply (R a) where
+instance Semiapplicative (R a) where
   (<.>) = (<*>)
   {-# INLINE (<.>) #-}
 

@@ -18,7 +18,7 @@ import Control.Monad.Zip
 import Data.Distributive
 import Data.Fold.Class
 import Data.Fold.Internal
-import Data.Functor.Apply
+import Data.Functor.Semiapplicative
 import Data.Functor.Rep as Functor
 import Data.Pointed
 import Data.Profunctor.Closed
@@ -28,7 +28,7 @@ import Data.Profunctor.Rep as Profunctor
 import Data.Profunctor.Unsafe
 import Data.Proxy
 import Data.Reflection
-import Data.Semigroup.Foldable
+import Data.Semigroup.Semifoldable
 import Data.Semigroupoid
 import Prelude hiding (id,(.))
 import Unsafe.Coerce
@@ -59,7 +59,7 @@ instance Pointed (M1 a) where
   point x = M1 (\() -> x) (\_ -> ()) (\() () -> ())
   {-# INLINE point #-}
 
-instance Apply (M1 a) where
+instance Semiapplicative (M1 a) where
   (<.>) = (<*>)
   {-# INLINE (<.>) #-}
   (<.) m = \_ -> m
@@ -169,8 +169,8 @@ walk xs0 (M1 k h m) = k (go xs0) where
   go (Bin1 xs ys) = m (go xs) (go ys)
 {-# INLINE walk #-}
 
-runM1 :: Foldable1 f => f a -> M1 a b -> b
-runM1 p (M1 k h (m :: m -> m -> m)) = reify m $ \ (_ :: Proxy s) -> k $ runS (foldMap1 (S #. h) p :: S m s)
+runM1 :: Semifoldable f => f a -> M1 a b -> b
+runM1 p (M1 k h (m :: m -> m -> m)) = reify m $ \ (_ :: Proxy s) -> k $ runS (semifoldMap (S #. h) p :: S m s)
 
 instance Closed M1 where
   closed (M1 k h m) = M1 (\f x -> k (f x)) (fmap h) (liftA2 m)
